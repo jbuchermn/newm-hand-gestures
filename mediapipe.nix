@@ -11,7 +11,6 @@ buildPythonPackage rec {
 
   pyInterpreterVersion = "cp${builtins.replaceStrings [ "." ] [ "" ] python.pythonVersion}";
 
-  # https://files.pythonhosted.org/packages/49/60/a1619ba4edd89fa78a687c0fb94476bb55a2e37e8d380bbd756b8a7934fd/mediapipe-0.8.9.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
   src = fetchPypi {
     inherit pname version format;
     python = pyInterpreterVersion;

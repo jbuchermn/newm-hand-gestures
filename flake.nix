@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-
     flake-utils.url = "github:numtide/flake-utils";
   };
 
@@ -16,34 +15,21 @@
         overlays = [
           (self: super: rec {
             python3 = super.python3.override {
-              packageOverrides = self1: super1: {
-                opencv4 = (super1.opencv4.override { enableGtk3 = true; });
+              packageOverrides = pyself: pysuper: {
+                opencv4 = (pysuper.opencv4.override { enableGtk3 = true; });
                 mediapipe = super.callPackage ./mediapipe.nix {
-                  inherit (super1) buildPythonPackage isPy38 isPy39 absl-py attrs matplotlib numpy six wheel fetchPypi;
+                  inherit (pyself) buildPythonPackage isPy38 isPy39 absl-py attrs matplotlib numpy six wheel fetchPypi;
                   python = python3;
+                };
+                dasbus = super.callPackage ./dasbus.nix {
+                  inherit (pyself) buildPythonPackage fetchPypi pygobject3;
                 };
               };
             };
-            python3Packages = python3.pkgs;
           })
         ];
       };
 
-      dasbuspkg = {
-        dasbus = pkgs.python3.pkgs.buildPythonPackage rec {
-          pname = "dasbus";
-          version = "1.6";
-
-          src = pkgs.python3.pkgs.fetchPypi {
-            inherit pname version;
-            sha256 = "sha256-FJrY/Iw9KYMhq1AVm1R6soNImaieR+IcbULyyS5W6U0=";
-          };
-
-          setuptoolsCheckPhase = "true";
-
-          propagatedBuildInputs = with pkgs.python3Packages; [ pygobject3 ];
-        };
-      };
     in
     {
       devShell = let
@@ -52,7 +38,7 @@
           opencv4
           tensorflow
           mediapipe
-          dasbuspkg.dasbus
+          dasbus
 
           python-lsp-server
           pylsp-mypy
